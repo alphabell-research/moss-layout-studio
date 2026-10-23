@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A browser-only layout editor for MOSS-Image-Base. Place text and objects, then export the exact model prompt JSON.">
+  <meta property="og:title" content="MOSS Layout Studio by alphaBell">
+  <meta property="og:description" content="Draw text and object boxes. Export the exact layout JSON for MOSS-Image-Base.">
+  <meta property="og:image" content="https://huggingface.co/spaces/alphabell/MOSS-Layout-Studio/resolve/main/thumbnail.png">
+  <meta property="og:url" content="https://huggingface.co/spaces/alphabell/MOSS-Layout-Studio">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <title>MOSS Layout Studio · alphaBell</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#stage">Skip to layout editor</a>
+  <header class="masthead">
+    <a class="brand" href="https://huggingface.co/alphabell" target="_blank" rel="noreferrer"><span class="bell" aria-hidden="true">aB</span>alphaBell <span class="brand-lab">APPLIED MODEL LAB</span></a>
+    <span class="local-badge"><span aria-hidden="true"></span> Browser only. Your draft stays here.</span>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="title">
+      <div><p class="eyebrow">A SMALL TOOL FOR A BIG IMAGE MODEL</p><h1 id="title">MOSS Layout <span>Studio.</span></h1><p class="dek">Put the words where you want them. Draw a composition, then export the exact layout prompt for MOSS-Image-Base.</p></div>
+      <div class="intro-note"><span class="note-index">01 / COMPOSE</span><p>A layout sketch, not a generated image. MOSS-Image-Base layout control is experimental.</p><a href="https://github.com/OpenMOSS/MOSS-Image/blob/52b87fca23acedc399d062d593bec388aee9926a/USERGUIDE.md#layout-prompts-experimental" target="_blank" rel="noreferrer">Read the official format ↗</a></div>
+    </section>
+    <div class="workspace-toolbar"><div class="segmented" aria-label="Example layouts"><button type="button" data-example="poster" class="active">Travel poster</button><button type="button" data-example="cup">Ceramic campaign</button><button type="button" data-example="type">Type playground</button></div><div class="history"><button id="undo" type="button" title="Undo last edit" disabled>↶ <span>Undo</span></button><button id="redo" type="button" title="Redo last edit" disabled>↷ <span>Redo</span></button><button id="reset" type="button">Reset example</button></div></div>
+    <section class="workspace" aria-label="Layout workspace">
+      <aside class="panel setup" aria-labelledby="canvas-title">
+        <div class="panel-heading"><span class="section-number">01</span><h2 id="canvas-title">Canvas & scene</h2></div>
+        <div class="dimension-row"><label>Width, px<input id="canvas-width" type="number" min="16" max="8192" step="16" value="1024"></label><span aria-hidden="true">×</span><label>Height, px<input id="canvas-height" type="number" min="16" max="8192" step="16" value="1024"></label></div>
+        <p class="hint">Multiples of 16. Use these dimensions when you generate.</p>
+        <label class="check-row"><input id="scale-boxes" type="checkbox" checked> Scale boxes with the canvas</label><button id="apply-size" class="secondary full" type="button">Apply canvas size</button>
+        <label class="field-label">Overall scene<textarea id="scene-caption" rows="5"></textarea></label>
+        <div class="two-fields"><label>Composition<select id="canvas-kind"><option value="single">Single image</option><option value="multi_panel">Multiple panels</option><option value="collage">Collage</option></select></label><div class="genre-field"><label for="scene-meta">Medium / genre</label><div id="scene-tags" class="scene-tags" aria-label="Genre tags"></div><div class="tag-add"><input id="scene-meta" type="text" aria-describedby="meta-help" placeholder="Add a genre"><button id="add-meta" type="button" aria-label="Add genre tag">+</button></div></div></div><p class="hint" id="meta-help">Type a tag and press Enter. Remove a tag with its × button.</p>
+        <div class="layers-heading"><h3>Elements <span id="element-count">2</span></h3><div class="add-buttons"><button type="button" id="add-text">+ Text</button><button type="button" id="add-object">+ Object</button><button type="button" id="add-character">+ Character</button></div></div>
+        <div id="layers" class="layers" aria-label="Layout elements"></div>
+        <p class="hint keyboard-hint">Select a box. Arrow keys move it, Shift moves 10 px. Alt + arrows resize it. Numeric fields give exact control.</p>
+      </aside>
+      <section class="stage-panel" aria-label="Visual composition">
+        <div class="stage-top"><span id="canvas-readout">1024 × 1024 px</span><label class="check-row"><input id="show-grid" type="checkbox" checked> Grid</label></div>
+        <div class="stage-surround"><div id="stage" class="stage grid" role="group" aria-label="Layout canvas. Select an element to move or resize it."></div></div>
+        <div class="stage-bottom"><span><span class="dot text-dot"></span>Text <span class="dot object-dot"></span>Object <span class="dot character-dot"></span>Character</span><span>Schematic preview</span></div>
+        <div class="coordinate-note"><span class="coordinate-icon" aria-hidden="true">↗</span><p>You place boxes from the top left.<br><strong>We convert to centered [y₁, x₁, y₂, x₂].</strong></p></div>
+      </section>
+      <aside class="panel inspector" aria-labelledby="element-title"><div class="panel-heading"><span class="section-number">02</span><h2 id="element-title">Selected element</h2></div>
+        <div id="empty-selection" hidden>Select an element to edit its appearance and position.</div>
+        <div id="selection-fields"><label>Element type<select id="item-label"><option value="text">Text</option><option value="object">Object</option><option value="character">Character</option></select></label>
+          <label id="literal-field">Exact visible text<textarea id="item-text" rows="3" spellcheck="false"></textarea><span class="hint">Characters and line breaks are preserved. Unicode is welcome.</span></label>
+          <label>Appearance<textarea id="item-caption" rows="4"></textarea></label>
+          <div class="box-fields"><label>X, px<input id="box-x" type="number" min="0" step="1"></label><label>Y, px<input id="box-y" type="number" min="0" step="1"></label><label>Width, px<input id="box-w" type="number" min="1" step="1"></label><label>Height, px<input id="box-h" type="number" min="1" step="1"></label></div>
+          <div class="coord-card"><span>MODEL COORDINATES · YXYX</span><output id="centered-readout"></output></div>
+          <div class="item-actions"><button id="duplicate" type="button" class="secondary">Duplicate</button><button id="delete" type="button" class="danger">Remove</button></div>
+        </div>
+      </aside>
+    </section>
+    <p id="status" class="status" role="status" aria-live="polite">Ready to compose.</p>
+    <p id="layout-warning" class="layout-warning" hidden></p>
+    <section class="export-panel" aria-labelledby="export-title"><div class="export-intro"><span class="section-number">03</span><h2 id="export-title">Take it to MOSS.</h2><p>Save the editable draft, or copy the compiled JSON into MOSS-Image-Base’s prompt field. Set the same image dimensions in your generation tool.</p><p class="save-note">Drafts stay in memory. Download yours before closing this page.</p><div class="export-facts"><span>No account</span><span>No inference</span><span>No uploads</span></div></div>
+      <div class="export-code"><div class="code-tabs" role="tablist" aria-label="JSON format"><button type="button" id="tab-prompt" role="tab" aria-selected="true" aria-controls="json-output">Model prompt</button><button type="button" id="tab-draft" role="tab" aria-selected="false" aria-controls="json-output" tabindex="-1">Editable draft</button></div><p id="format-help" class="format-help">Centered pixels · yxyx · image dimensions stay in your generation settings</p><textarea id="json-output" readonly spellcheck="false" aria-label="Compiled MOSS model prompt"></textarea><div class="export-actions"><button id="copy" type="button" class="primary">Copy model prompt <span aria-hidden="true">↗</span></button><button id="download" type="button" class="secondary">Download JSON</button><label class="file-button secondary">Import draft<input id="import" type="file" accept=".json,application/json"></label></div></div>
+    </section>
+    <section class="how-it-works" aria-label="Using the exported layout"><article><span>1</span><div><h3>Compose in pixels</h3><p>Drag and resize boxes. Write the exact visible words and describe each element’s appearance.</p></div></article><article><span>2</span><div><h3>Copy the model prompt</h3><p>The editor compiles absolute xyxy boxes into MOSS’s centered yxyx format. Dimensions are omitted from the prompt.</p></div></article><article><span>3</span><div><h3>Generate, then compare</h3><p>Use the same canvas dimensions in MOSS-Image. The sketch describes intent; the model’s output may differ.</p></div></article></section>
+  </main>
+  <footer><div><strong>alphaBell</strong><p>Small tools. Useful experiments.</p></div><p>Independent tooling for OpenMOSS’s experimental layout format.<br>Source checked against <a href="https://github.com/OpenMOSS/MOSS-Image/tree/52b87fca23acedc399d062d593bec388aee9926a/skills/moss-image-prompt-enhancer" target="_blank" rel="noreferrer">OpenMOSS’s compiler and format reference ↗</a></p><nav aria-label="Project links"><a href="https://github.com/alphabell-research/moss-layout-studio" target="_blank" rel="noreferrer">Source and checks ↗</a><a href="https://huggingface.co/OpenMOSS-Team/MOSS-Image-Base" target="_blank" rel="noreferrer">MOSS-Image-Base ↗</a><a href="https://huggingface.co/alphabell" target="_blank" rel="noreferrer">More from alphaBell ↗</a></nav></footer>
+  <script src="app.js" type="module"></script>
+</body>
+</html>

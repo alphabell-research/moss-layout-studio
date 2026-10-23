@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venv/
+.cache/
+qa-output/
+test-results/
+playwright-report/
