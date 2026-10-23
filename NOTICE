@@ -1,0 +1,10 @@
+MOSS Layout Studio by alphaBell.
+
+The layout compiler behavior is adapted from OpenMOSS/MOSS-Image,
+revision 52b87fca23acedc399d062d593bec388aee9926a, licensed under Apache-2.0.
+The unchanged reference compiler is included only in tests/vendor/compile_prompt.py.
+The JavaScript module is a browser adaptation with import, editing and validation
+helpers. OpenMOSS does not endorse this independent project.
+
+Source:
+https://github.com/OpenMOSS/MOSS-Image/blob/52b87fca23acedc399d062d593bec388aee9926a/skills/moss-image-prompt-enhancer/scripts/compile_prompt.py
