@@ -28,3 +28,5 @@ jobs:
         run: python3 verify.py
       - name: Exercise the blind evaluator
         run: python3 verify_evaluator.py
+      - name: Verify standalone Space package
+        run: python3 standalone/check_build.py

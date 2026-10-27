@@ -1,0 +1,18 @@
+MOSS Blind Layout Check by alphaBell.
+
+The layout parser is the unchanged alphaBell browser adaptation from MOSS
+Layout Studio. Its compiler behavior follows OpenMOSS/MOSS-Image revision
+52b87fca23acedc399d062d593bec388aee9926a, licensed under Apache-2.0.
+The standalone Space is built from the same canonical source and does not
+maintain a separate scoring implementation.
+
+OpenMOSS publisher models referenced by the evaluator:
+https://huggingface.co/OpenMOSS-Team/MOSS-Image-Base
+https://huggingface.co/OpenMOSS-Team/MOSS-Image-SFT
+
+The Space includes no model weights, publisher example images or user image
+bytes. Users choose their own images locally; only hashes and manual
+annotations appear in a downloaded result.
+
+Source reference:
+https://github.com/OpenMOSS/MOSS-Image/blob/52b87fca23acedc399d062d593bec388aee9926a/skills/moss-image-prompt-enhancer/scripts/compile_prompt.py
