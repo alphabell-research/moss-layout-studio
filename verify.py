@@ -130,7 +130,7 @@ def main():
                 assert 'inside the canvas' in page.locator('#status').inner_text()
                 page.locator('#scene-caption').fill('')
                 page.locator('#scene-caption').press('Tab')
-                assert page.locator('#copy').is_disabled() and page.locator('#download').is_disabled()
+                assert page.locator('#copy').is_disabled() and page.locator('#download').is_disabled() and page.locator('#download-comfy').is_disabled()
                 page.locator('#scene-caption').fill('A test composition with exact words.')
                 page.locator('#scene-caption').press('Tab')
                 assert page.locator('#copy').is_enabled()
@@ -161,6 +161,15 @@ def main():
                 download = event.value
                 assert download.suggested_filename == 'moss-draft-1536x1024.json'
                 assert Path(download.path()).read_text() == expected
+                with page.expect_download() as comfy_event:
+                    page.locator('#download-comfy').click()
+                comfy_download = comfy_event.value
+                assert comfy_download.suggested_filename == 'moss-comfyui-draft-1536x1024.json'
+                comfy = json.loads(Path(comfy_download.path()).read_text())
+                assert comfy['width'] == 1536 and comfy['height'] == 1024
+                assert comfy['items'][1]['text'] == '把日常，过成诗。'
+                assert comfy['items'][0]['bbox'] == [176, 224, 800, 864]
+                check('ComfyUI draft download retains canvas and exact text')
                 page.evaluate('Object.defineProperty(navigator,"clipboard",{configurable:true,value:{writeText:()=>Promise.reject(new Error("denied"))}})')
                 page.locator('#copy').click()
                 assert 'JSON is selected' in page.locator('#status').inner_text()

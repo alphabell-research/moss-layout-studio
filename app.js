@@ -1,4 +1,4 @@
-import { makeDraft, makeLayout, parseLayout, toCentralBox, resizeLayout, validateDraft } from './layout.mjs';
+import { makeComfyDraft, makeDraft, makeLayout, parseLayout, toCentralBox, resizeLayout, validateDraft } from './layout.mjs';
 
 const $ = id => document.getElementById(id);
 const copy = value => JSON.parse(JSON.stringify(value));
@@ -43,6 +43,7 @@ let nextId = 1;
 let pointerAction = null;
 let compiled = null;
 let draft = null;
+let comfyDraft = null;
 let exportError = '';
 
 function announce(message, error = false) {
@@ -179,14 +180,15 @@ function renderExport() {
     if (!validation.valid) throw new Error(validation.errors.join(' '));
     warnings = validation.warnings;
     compiled = makeLayout(state);
+    comfyDraft = makeComfyDraft(draft);
   } catch (error) {
-    compiled = null; draft = null; exportError = error.message;
+    compiled = null; draft = null; comfyDraft = null; exportError = error.message;
   }
   const isPrompt = activeTab === 'prompt';
   $('json-output').value = exportError ? `Draft needs attention:\n${exportError}` : JSON.stringify(isPrompt ? compiled : draft, null, 2);
   $('json-output').setAttribute('aria-label', isPrompt ? 'Compiled MOSS model prompt' : 'Editable MOSS layout draft');
   $('copy').textContent = isPrompt ? 'Copy model prompt ↗' : 'Copy editable draft ↗';
-  $('copy').disabled = $('download').disabled = Boolean(exportError);
+  $('copy').disabled = $('download').disabled = $('download-comfy').disabled = Boolean(exportError);
   $('layout-warning').hidden = !warnings.length;
   $('layout-warning').textContent = warnings.join(' ');
   $('format-help').textContent = isPrompt ? 'Centered pixels · yxyx · image dimensions stay in your generation settings' : 'Top-left pixels · xyxy · includes image dimensions for editing';
@@ -410,6 +412,15 @@ $('download').addEventListener('click', () => {
   const anchor = document.createElement('a'); anchor.href = url; anchor.download = `moss-${activeTab}-${state.width}x${state.height}.json`;
   anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   announce(`${activeTab === 'prompt' ? 'Model prompt' : 'Editable draft'} downloaded.`);
+});
+
+$('download-comfy').addEventListener('click', () => {
+  if (exportError) return;
+  const blob = new Blob([JSON.stringify(comfyDraft, null, 2) + '\n'], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a'); anchor.href = url; anchor.download = `moss-comfyui-draft-${state.width}x${state.height}.json`;
+  anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  announce(`ComfyUI draft downloaded at ${state.width} × ${state.height} px.`);
 });
 
 $('import').addEventListener('change', async event => {

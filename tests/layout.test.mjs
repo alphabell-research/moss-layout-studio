@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compileDraft, makeDraft, makeLayout, parseLayout, parseStrictJSON, toCentralBox, fromCentralBox, resizeLayout, validateDraft, clampRect } from '../layout.mjs';
+import { compileDraft, makeComfyDraft, makeDraft, makeLayout, parseLayout, parseStrictJSON, toCentralBox, fromCentralBox, resizeLayout, validateDraft, clampRect } from '../layout.mjs';
 
 const draft = () => ({ width: 1536, height: 1024, bbox_coord_space: 'abs', bbox_format: 'xyxy', summary: { caption: 'A ceramic campaign.', meta: ['poster'], canvas: 'single', palette: ['ivory'] }, items: [{ label: 'text', caption: 'Dark-green lettering.', text: '把日常，过成诗。\n"MOSS" 🪴', bbox: [928, 272, 1408, 448], tags: ['title'], palette: ['green'] }] });
 
@@ -24,6 +24,18 @@ test('draft and compiled round trips retain optional creative fields and literal
   assert.deepEqual(makeLayout(parseLayout(JSON.stringify(compileDraft(source)), { width: 1536, height: 1024 })), compileDraft(source));
   assert.equal('id' in makeDraft(state).items[0], false);
   assert.equal(state.items[0].text, source.items[0].text);
+});
+test('ComfyUI draft preserves the compiled prompt at fractional pixel edges', () => {
+  const source = draft(), before = structuredClone(source);
+  source.items[0].bbox = [927.9999999999, 271.9999999999, 1408.0000000001, 448.0000000001];
+  const sourceBefore = structuredClone(source);
+  const handoff = makeComfyDraft(source);
+  assert.deepEqual(handoff.items[0].bbox, [928, 272, 1408, 448]);
+  assert.deepEqual(compileDraft(handoff), compileDraft(source));
+  assert.deepEqual(handoff.summary, before.summary);
+  assert.equal(handoff.items[0].text, before.items[0].text);
+  assert.deepEqual(source, sourceBefore);
+  assert.notStrictEqual(handoff.items[0], source.items[0]);
 });
 test('compiled import requires dimensions and honors non-square axis order', () => {
   const source = compileDraft(draft()); assert.throws(() => parseLayout(JSON.stringify(source)), /width/);

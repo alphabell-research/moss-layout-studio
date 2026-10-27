@@ -20,6 +20,7 @@ tags:
   - evaluation
   - blind-evaluation
   - text-rendering
+  - comfyui
 short_description: Draw MOSS layouts and blind-check two generated outputs
 ---
 
@@ -32,6 +33,12 @@ Draw a poster, place exact text, and export the JSON layout for MOSS-Image-Base'
 ![MOSS Layout Studio with an editable travel poster, exact text boxes and a centered model-coordinate readout.](preview.png)
 
 Move and resize text, object and character boxes on a canvas. Keep Chinese copy, emoji and intended line breaks intact. Import an existing layout to edit it, or start from a composition preset.
+
+## Use the layout in ComfyUI
+
+Click **Download for ComfyUI** in Studio. In the [MOSS Layout Prompt node](https://github.com/LinXce/Comfyui-Moss-LayoutPrompt), set the canvas to the width and height in the filename, then load the JSON with **从文件导入** (Import from file). Connect the node's `prompt` output to `CLIPTextEncode` and its `width` and `height` outputs to the latent image node, as in the plugin's example workflow.
+
+The handoff keeps the exact text and layout metadata. Its whole-pixel box edges compile to the same layout coordinates shown in Studio. After generating images, use the [blind layout check](https://huggingface.co/spaces/alphabell/MOSS-Blind-Layout-Check) to inspect text and placement.
 
 ## Blind-check two generated images
 
