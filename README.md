@@ -40,6 +40,8 @@ Click **Download for ComfyUI** in Studio. In the [MOSS Layout Prompt node](https
 
 The handoff keeps the exact text and layout metadata. Its whole-pixel box edges compile to the same layout coordinates shown in Studio. After generating images, use the [blind layout check](https://huggingface.co/spaces/alphabell/MOSS-Blind-Layout-Check) to inspect text and placement.
 
+The [ComfyUI walkthrough](https://huggingface.co/blog/alphabell/moss-layout-studio-to-comfyui) shows the complete browser-to-node workflow.
+
 ## Blind-check two generated images
 
 [**Open the blind layout check**](https://alphabell-moss-layout-studio.static.hf.space/evaluate.html). Import one Studio draft or compiled MOSS layout prompt, then choose a Base output and an SFT output in separate fields. The page randomizes their display order and hides file names while you inspect them.
