@@ -8,3 +8,9 @@ helpers. OpenMOSS does not endorse this independent project.
 
 Source:
 https://github.com/OpenMOSS/MOSS-Image/blob/52b87fca23acedc399d062d593bec388aee9926a/skills/moss-image-prompt-enhancer/scripts/compile_prompt.py
+
+The blind A/B evaluator references these OpenMOSS publisher models:
+https://huggingface.co/OpenMOSS-Team/MOSS-Image-Base
+https://huggingface.co/OpenMOSS-Team/MOSS-Image-SFT
+The evaluator contains no model weights or publisher example images. Users
+provide their own image pair locally; image bytes are not uploaded or exported.

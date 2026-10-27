@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Validate geometry and schema
-        run: node --test tests/layout.test.mjs
+        run: node --test tests/layout.test.mjs tests/evaluate.test.mjs
       - name: Compare the pinned upstream compiler
         run: python3 tests/reference_check.py
       - name: Install browser test dependencies
@@ -26,3 +26,5 @@ jobs:
           python3 -m playwright install --with-deps chromium
       - name: Exercise the browser editor
         run: python3 verify.py
+      - name: Exercise the blind evaluator
+        run: python3 verify_evaluator.py
