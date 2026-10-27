@@ -1,5 +1,5 @@
 ---
-title: MOSS Layout Studio
+title: MOSS Layout Studio + Blind Check
 emoji: 🧩
 colorFrom: gray
 colorTo: purple
@@ -18,6 +18,8 @@ tags:
   - prompt-engineering
   - debugging
   - evaluation
+  - blind-evaluation
+  - text-rendering
 short_description: Draw MOSS layouts and blind-check two generated outputs
 ---
 
