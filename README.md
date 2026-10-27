@@ -10,13 +10,15 @@ thumbnail: https://huggingface.co/spaces/alphabell/MOSS-Layout-Studio/resolve/ma
 license: apache-2.0
 models:
   - OpenMOSS-Team/MOSS-Image-Base
+  - OpenMOSS-Team/MOSS-Image-SFT
 tags:
   - moss-image
   - layout
   - text-to-image
   - prompt-engineering
   - debugging
-short_description: Draw layouts and export MOSS-Image prompt JSON
+  - evaluation
+short_description: Draw MOSS layouts and blind-check two generated outputs
 ---
 
 # MOSS Layout Studio
@@ -28,6 +30,16 @@ Draw a poster, place exact text, and export the JSON layout for MOSS-Image-Base'
 ![MOSS Layout Studio with an editable travel poster, exact text boxes and a centered model-coordinate readout.](preview.png)
 
 Move and resize text, object and character boxes on a canvas. Keep Chinese copy, emoji and intended line breaks intact. Import an existing layout to edit it, or start from a composition preset.
+
+## Blind-check two generated images
+
+[**Open the blind layout check**](https://alphabell-moss-layout-studio.static.hf.space/evaluate.html). Import one Studio draft or compiled MOSS layout prompt, then choose a Base output and an SFT output in separate fields. The page randomizes their display order and hides file names while you inspect them.
+
+For each target text region, transcribe what is actually visible and draw or enter its observed box. You can mark text missing or illegible. After both sides are complete, reveal the labels and download a JSON record with literal text scores, placement overlap, source revisions, image SHA-256 hashes and your manual annotations. Image bytes stay in the browser tab and are never exported. Compiled prompts omit dimensions, so enter the original generation width and height; both uploaded images must match them. The evaluator reuses the Studio parser and checks Unicode graphemes without OCR or inference.
+
+This is a check of one user-supplied image pair. Differences in seeds, crops, prompts and generation settings may affect the result. The [pinned MOSS-Image-SFT model card](https://huggingface.co/OpenMOSS-Team/MOSS-Image-SFT/blob/f972bd4b4b9e3852133cc5da954d87bc32cd8fb9/README.md) supplies the motivation for a paired layout check; this page does not claim a general model ranking.
+
+The evaluator accepts a layout JSON smaller than 1 MB, up to 50 text regions of 1,000 graphemes each, and two images up to 20 MB each. Its display supports original dimensions up to 8192 pixels per side. These are browser-tool limits, separate from the publisher's model format.
 
 The editor runs in your browser. It prepares layouts without model inference. Its wireframe shows placement and text, rather than a generated image. Drafts remain in memory until you download them; there is no autosave, analytics or uploaded prompt content.
 
@@ -63,6 +75,7 @@ The test suite needs Node.js and Python 3, with no model weights or third-party 
 
 ```sh
 node --test tests/layout.test.mjs
+node --test tests/evaluate.test.mjs
 python3 tests/reference_check.py
 ```
 
@@ -71,6 +84,7 @@ For the browser checks, install Playwright and Chromium, then run:
 ```sh
 python3 -m pip install -r requirements-dev.txt
 python3 verify.py
+python3 verify_evaluator.py
 ```
 
 The browser suite covers all three presets, exact JSON round trips and downloads, keyboard movement and resizing, real touch dragging and resizing, mobile layout, undo and redo, strict imports, literal HTML text, clipboard denial and outbound network isolation. It also accepts `--base-url` to check a hosted static deployment.
