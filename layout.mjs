@@ -134,6 +134,16 @@ export function compileDraft(draft) {
   return { summary: copy(draft.summary), items: checkItems(draft.items, width, height), bbox_coord_space: 'abs_centralized', bbox_format: 'yxyx' };
 }
 
+export function makeComfyDraft(draft) {
+  const compiled = compileDraft(draft);
+  const result = copy(draft);
+  result.items = result.items.map((item, index) => {
+    const rect = fromCentralBox(compiled.items[index].bbox, result.width, result.height);
+    return { ...item, bbox: [rect.x, rect.y, rect.x + rect.w, rect.y + rect.h] };
+  });
+  return result;
+}
+
 export function validateDraft(draft) {
   try {
     compileDraft(draft);
